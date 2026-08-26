@@ -1,14 +1,10 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const sqlite3 = require("sqlite3").verbose();
+const fs = require("fs");
 
-const dbPath = path.join(__dirname, 'egtransfer.db');
+const db = new sqlite3.Database("./database/egtransfer.db");
 
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('Failed to connect to database:', err);
-    } else {
-        console.log('Connected to SQLite database');
-    }
-});
+// Load schema
+const schema = fs.readFileSync("./database/schema.sql", "utf8");
+db.exec(schema);
 
 module.exports = db;
