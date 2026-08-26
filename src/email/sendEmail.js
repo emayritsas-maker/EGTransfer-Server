@@ -1,26 +1,34 @@
-const fetch = require("node-fetch");
+const axios = require("axios");
 
-async function sendEmail(to, subject, text) {
-    const token = process.env.MAILERSEND_TOKEN;
+async function sendEmail(to, subject, html) {
+    const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 
-    await fetch("https://api.mailersend.com/v1/email", {
-        method: "POST",
-        headers: {
-            "Authorization": "Bearer " + token,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            from: {
-                email: "egtransfer.noreply@gmail.com",
-                name: "EGTransfer"
-            },
-            to: [
-                { email: to }
-            ],
-            subject: subject,
-            text: text
-        })
-    });
+    const data = {
+        personalizations: [
+            {
+                to: [{ email: to }],
+                subject: subject
+            }
+        ],
+        from: { email: "noreply@egtransfer.com" },
+        content: [
+            {
+                type: "text/html",
+                value: html
+            }
+        ]
+    };
+
+    await axios.post(
+        "https://api.sendgrid.com/v3/mail/send",
+        data,
+        {
+            headers: {
+                Authorization: `Bearer ${SENDGRID_API_KEY}`,
+                "Content-Type": "application/json"
+            }
+        }
+    );
 }
 
 module.exports = sendEmail;
