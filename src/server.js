@@ -29,7 +29,7 @@ const sendFriendRequestRoute = safeRequire("./routes/sendFriendRequest");
 const getFriendRequestsRoute = safeRequire("./routes/getFriendRequests");
 const acceptFriendRequestRoute = safeRequire("./routes/acceptFriendRequest");
 const getFriendsRoute = safeRequire("./routes/getFriends");
-const emailVerifyIPRoute = safeRequire("./routes/emailVerifyIP");
+const emailVerifyIPRoute = safeRequire("./email/emailVerifyIP");
 const signalRoute = safeRequire("./routes/signal");
 /* --------------------------------------------------------------- */
 
