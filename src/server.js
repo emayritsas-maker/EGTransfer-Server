@@ -50,7 +50,10 @@ app.use("/signal", signalRoute);
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
 });
-
+// Για UptimeRobot free που κάνει HEAD requests
+app.head("/health", (req, res) => {
+  res.status(200).end();
+});
 
 app.listen(3000, () => {
     console.log("EGTransfer Server running on port 3000");
