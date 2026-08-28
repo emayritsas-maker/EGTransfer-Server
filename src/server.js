@@ -44,7 +44,7 @@ app.use("/sendFriendRequest", sendFriendRequestRoute);
 app.use("/getFriendRequests", getFriendRequestsRoute);
 app.use("/acceptFriendRequest", acceptFriendRequestRoute);
 app.use("/getFriends", getFriendsRoute);
-app.use("/emailVerifyIP", emailVerifyIPRoute);
+app.use("/emailVerifyIP", require("./email/emailVerifyIP"));
 app.use("/signal", signalRoute);
 
 app.listen(3000, () => {
