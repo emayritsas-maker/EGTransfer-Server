@@ -9,38 +9,58 @@ router.post("/", (req, res) => {
     return res.json({ status: "error", error: "Missing requestId or accepterId" });
   }
 
-  // 1) Update friend_requests status
-  db.run(
-    "UPDATE friend_requests SET status = 'accepted' WHERE id = ?",
+  // 1) Πάρε το original request για να βρεις το fromUserId
+  db.get(
+    "SELECT fromUserId, toUserId, status FROM friend_requests WHERE id = ?",
     [requestId],
-    function (err) {
+    (err, row) => {
       if (err) return res.json({ status: "error", error: err.message || err });
+      if (!row) return res.json({ status: "error", error: "Request not found" });
+      if (row.status !== "pending") return res.json({ status: "error", error: "Request not pending" });
+      if (row.toUserId !== accepterId) return res.json({ status: "error", error: "AccepterId mismatch" });
 
-      if (this.changes === 0) {
-        return res.json({ status: "error", error: "No request updated" });
-      }
+      const fromUserId = row.fromUserId;
 
-      // 2) Optionally insert into friends table (if you have one)
-      // Adjust table/columns to match your schema. If you don't have a friends table, skip this.
+      // 2) Update status σε accepted
       db.run(
-        "INSERT INTO friends (userA, userB, createdAt) VALUES (?, ?, datetime('now'))",
-        [accepterId, /* fromUserId */ null],
-        function (insertErr) {
-          // If you don't have a friends table or want to handle linking differently,
-          // remove the insert block above and just return success after update.
-          // Here we attempt to fetch the original request to get fromUserId.
-          if (insertErr) {
-            // Not fatal: return success for acceptance but log the error
-            console.error("Failed to insert into friends table:", insertErr);
-            return res.json({ status: "ok", note: "request accepted, friends insert failed" });
-          }
+        "UPDATE friend_requests SET status = 'accepted' WHERE id = ?",
+        [requestId],
+        function (updateErr) {
+          if (updateErr) return res.json({ status: "error", error: updateErr.message || updateErr });
 
-          return res.json({ status: "ok" });
+          // 3) Προσθήκη στο friends table αν υπάρχει (προσαρμόζεις ονόματα στηλών αν χρειάζεται)
+          // Ελέγχουμε αν υπάρχει πίνακας friends με στήλες userA, userB
+          db.get(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='friends'",
+            (tableErr, tableRow) => {
+              if (tableErr) {
+                // Δεν είναι fatal — επιστρέφουμε επιτυχία για την αποδοχή
+                console.error("Error checking friends table:", tableErr);
+                return res.json({ status: "ok", note: "request accepted, friends table check failed" });
+              }
+
+              if (!tableRow) {
+                // Δεν υπάρχει friends table — απλά επιστρέφουμε επιτυχία
+                return res.json({ status: "ok", note: "request accepted" });
+              }
+
+              // Εισαγωγή και των δύο πλευρών (userA <-> userB)
+              db.run(
+                "INSERT INTO friends (userA, userB, createdAt) VALUES (?, ?, datetime('now'))",
+                [fromUserId, accepterId],
+                function (insertErr) {
+                  if (insertErr) {
+                    console.error("Failed to insert into friends:", insertErr);
+                    return res.json({ status: "ok", note: "request accepted, friends insert failed" });
+                  }
+
+                  return res.json({ status: "ok" });
+                }
+              );
+            }
+          );
         }
       );
-
-      // If you prefer to fetch the original request and insert both sides correctly:
-      // db.get("SELECT fromUserId FROM friend_requests WHERE id = ?", [requestId], (e, row) => { ... })
     }
   );
 });
