@@ -7,18 +7,45 @@ require("./database/db");
 
 app.use(express.json());
 
-app.use("/register", require("./routes/register"));
-app.use("/login", require("./routes/login"));
-app.use("/getMetadata", require("./routes/getMetadata"));
-app.use("/updateMetadata", require("./routes/updateMetadata"));
-app.use("/getFriendcode", require("./routes/getFriendcode"));
-app.use("/searchFriend", require("./routes/searchFriend"));
-app.use("/sendFriendRequest", require("./routes/sendFriendRequest"));
-app.use("/getFriendRequests", require("./routes/getFriendRequests"));
-app.use("/acceptFriendRequest", require("./routes/acceptFriendRequest"));
-app.use("/getFriends", require("./routes/getFriends"));
-app.use("/emailVerifyIP", require("./routes/emailVerifyIP"));
-app.use("/signal", require("./routes/signal"));
+/* -------------------- DEBUG BLOCK (ΒΑΛΤΟ ΕΔΩ) -------------------- */
+function safeRequire(p) {
+  try {
+    const mod = require(p);
+    console.log(`[DEBUG] require("${p}") -> type:`, typeof mod, "keys:", Object.keys(mod));
+    return mod;
+  } catch (e) {
+    console.error(`[DEBUG] require("${p}") FAILED:`, e && e.message);
+    throw e;
+  }
+}
+
+const registerRoute = safeRequire("./routes/register");
+const loginRoute = safeRequire("./routes/login");
+const getMetadataRoute = safeRequire("./routes/getMetadata");
+const updateMetadataRoute = safeRequire("./routes/updateMetadata");
+const getFriendcodeRoute = safeRequire("./routes/getFriendcode");
+const searchFriendRoute = safeRequire("./routes/searchFriend");
+const sendFriendRequestRoute = safeRequire("./routes/sendFriendRequest");
+const getFriendRequestsRoute = safeRequire("./routes/getFriendRequests");
+const acceptFriendRequestRoute = safeRequire("./routes/acceptFriendRequest");
+const getFriendsRoute = safeRequire("./routes/getFriends");
+const emailVerifyIPRoute = safeRequire("./routes/emailVerifyIP");
+const signalRoute = safeRequire("./routes/signal");
+/* --------------------------------------------------------------- */
+
+/* ΤΩΡΑ βάζεις τα app.use με τις μεταβλητές */
+app.use("/register", registerRoute);
+app.use("/login", loginRoute);
+app.use("/getMetadata", getMetadataRoute);
+app.use("/updateMetadata", updateMetadataRoute);
+app.use("/getFriendcode", getFriendcodeRoute);
+app.use("/searchFriend", searchFriendRoute);
+app.use("/sendFriendRequest", sendFriendRequestRoute);
+app.use("/getFriendRequests", getFriendRequestsRoute);
+app.use("/acceptFriendRequest", acceptFriendRequestRoute);
+app.use("/getFriends", getFriendsRoute);
+app.use("/emailVerifyIP", emailVerifyIPRoute);
+app.use("/signal", signalRoute);
 
 app.listen(3000, () => {
     console.log("EGTransfer Server running on port 3000");
