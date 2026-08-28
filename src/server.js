@@ -46,6 +46,11 @@ app.use("/acceptFriendRequest", acceptFriendRequestRoute);
 app.use("/getFriends", getFriendsRoute);
 app.use("/emailVerifyIP", require("./email/emailVerifyIP"));
 app.use("/signal", signalRoute);
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
 
 app.listen(3000, () => {
     console.log("EGTransfer Server running on port 3000");
