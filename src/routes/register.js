@@ -4,8 +4,8 @@ const db = require('../database/db');
 const generateFriendCode = require("../utils/generateFriendCode");
 const { hashPassword } = require("../utils/hashPassword");
 
-router.get("/", async (req, res) => {
-    const { username, email, password, ip } = req.query;
+router.post("/", async (req, res) => {
+    const { username, email, password, ip } = req.body;
 
     if (!username || !email || !password || !ip) {
         return res.json({ status: "error", error: "Missing fields" });
