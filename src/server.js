@@ -35,6 +35,7 @@ const signalRoute = safeRequire("./routes/signal");
 
 /* ΤΩΡΑ βάζεις τα app.use με τις μεταβλητές */
 app.use("/register", registerRoute);
+app.use("/verifyEmail", require("./routes/verifyEmail"));
 app.use("/login", loginRoute);
 app.use("/getMetadata", getMetadataRoute);
 app.use("/updateMetadata", updateMetadataRoute);
