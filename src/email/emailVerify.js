@@ -1,32 +1,43 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../database/db");
-const sendEmail = require("../email/sendEmail");
 
-router.post("/", async (req, res) => {
-    const { username } = req.body;
+router.get("/", (req, res) => {
+    const code = req.query.code;
 
-    if (!username) {
-        return res.json({ status: "error", error: "Missing username" });
+    if (!code) {
+        return res.send("Missing verification code.");
     }
 
-    db.get("SELECT email, verificationCode FROM users WHERE username = ?", [username], async (err, user) => {
-        if (err || !user) {
-            return res.json({ status: "error", error: "User not found" });
+    db.get(
+        "SELECT id FROM users WHERE verificationCode = ?",
+        [code],
+        (err, row) => {
+            if (err) {
+                return res.send("Database error.");
+            }
+
+            if (!row) {
+                return res.send("Invalid or expired verification code.");
+            }
+
+            // Mark user as verified
+            db.run(
+                "UPDATE users SET isVerified = 1, verificationCode = '' WHERE id = ?",
+                [row.id],
+                (err2) => {
+                    if (err2) {
+                        return res.send("Error verifying account.");
+                    }
+
+                    res.send(`
+                        <h2>Account Verified!</h2>
+                        <p>You can now use the EGTransfer app.</p>
+                    `);
+                }
+            );
         }
-
-        const link = `https://egtransfer.com/verify?code=${user.verificationCode}`;
-
-        await sendEmail(
-            user.email,
-            "Verify your EGTransfer account",
-            `<h1>Welcome to EGTransfer</h1>
-             <p>Click the link below to verify your account:</p>
-             <a href="${link}">Verify Account</a>`
-        );
-
-        res.json({ status: "ok" });
-    });
+    );
 });
 
 module.exports = router;
