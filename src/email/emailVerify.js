@@ -1,7 +1,7 @@
 const sendEmail = require("./sendEmail");
 
 async function sendVerificationEmail(email, code) {
-    const verifyLink = `https://egtransfer-server.onrender.com/verify?code=${code}`;
+    const verifyLink = `https://egtransfer-web.netlify.app/verify?code=${code}`;
 
     const html = `
         <h2>Verify your EGTransfer account</h2>
