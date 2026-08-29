@@ -59,7 +59,7 @@ router.post("/", async (req, res) => {
                         }
 
                         // Send verification email
-                        await sendVerificationEmail(email, verificationCode);
+                        console.log("Sending email..."); await sendVerificationEmail(email, verificationCode); console.log("Email sent!");;
 
                         // Tell the EXE to wait for verification
                         res.json({
