@@ -1,43 +1,17 @@
-const express = require("express");
-const router = express.Router();
-const db = require("../database/db");
+const sendEmail = require("./sendEmail");
 
-router.get("/", (req, res) => {
-    const code = req.query.code;
+async function sendVerificationEmail(email, code) {
+    const verifyLink = `https://egtransfer-server.onrender.com/verify?code=${code}`;
 
-    if (!code) {
-        return res.send("Missing verification code.");
-    }
+    const html = `
+        <h2>Verify your EGTransfer account</h2>
+        <p>Click the link below to verify your account:</p>
+        <a href="${verifyLink}">Verify Account</a>
+        <br><br>
+        <p>If you did not create an account, ignore this email.</p>
+    `;
 
-    db.get(
-        "SELECT id FROM users WHERE verificationCode = ?",
-        [code],
-        (err, row) => {
-            if (err) {
-                return res.send("Database error.");
-            }
+    await sendEmail(email, "EGTransfer Email Verification", html);
+}
 
-            if (!row) {
-                return res.send("Invalid or expired verification code.");
-            }
-
-            // Mark user as verified
-            db.run(
-                "UPDATE users SET isVerified = 1, verificationCode = '' WHERE id = ?",
-                [row.id],
-                (err2) => {
-                    if (err2) {
-                        return res.send("Error verifying account.");
-                    }
-
-                    res.send(`
-                        <h2>Account Verified!</h2>
-                        <p>You can now use the EGTransfer app.</p>
-                    `);
-                }
-            );
-        }
-    );
-});
-
-module.exports = router;
+module.exports = sendVerificationEmail;
