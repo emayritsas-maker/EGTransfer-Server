@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 // Correct absolute path based on the folder where db.js lives
-const dbPath = path.join(__dirname, "egtransfer.db");
+const dbPath = "/var/data/egtransfer.db";
 const schemaPath = path.join(__dirname, "schema.sql");
 
 const db = new sqlite3.Database(dbPath);
