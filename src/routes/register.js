@@ -17,10 +17,11 @@ router.post("/", async (req, res) => {
     }
 
     try {
-        // Hash password
         const passwordHash = await bcrypt.hash(password, 10);
+        const friendcode = "FRIEND_" + Math.random().toString(36).substring(2, 8).toUpperCase();
+        const verificationCode = generateVerificationCode();
+        const now = new Date().toISOString();
 
-        // Create user
         db.run(
             `INSERT INTO users 
             (username, email, passwordHash, friendcode, lastLogin, ip, isVerified, verificationCode)
@@ -29,49 +30,35 @@ router.post("/", async (req, res) => {
                 username,
                 email,
                 passwordHash,
-                "FRIEND" + Math.random().toString(36).substring(2, 8).toUpperCase(),
-                new Date().toISOString(),
+                friendcode,
+                now,
                 ip || "0.0.0.0",
-                0, // not verified yet
-                "" // will update below
+                0,
+                verificationCode
             ],
             async function (err) {
                 if (err) {
+                    console.log("DB error:", err);
                     return res.json({
                         status: "error",
-                        error: err
+                        error: err.code || err.message
                     });
                 }
 
-                const userId = this.lastID;
-                const verificationCode = generateVerificationCode();
+                try {
+                    await sendVerificationEmail(email, verificationCode);
+                } catch (emailErr) {
+                    console.error("Email error:", emailErr);
+                }
 
-                // Save verification code
-                db.run(
-                    "UPDATE users SET verificationCode = ? WHERE id = ?",
-                    [verificationCode, userId],
-                    async function (err2) {
-                        if (err2) {
-                            return res.json({
-                                status: "error",
-                                error: err2
-                            });
-                        }
-
-                        // Send verification email
-                        await sendVerificationEmail(email, verificationCode);
-
-                        // Tell the EXE to wait for verification
-                        res.json({
-                            status: "waiting_verification",
-                            message: "Check your email to verify your account."
-                        });
-                    }
-                );
+                return res.json({
+                    status: "waiting_verification",
+                    message: "Check your email to verify your account."
+                });
             }
         );
     } catch (e) {
-        res.json({ status: "error", error: e });
+        res.json({ status: "error", error: e.message });
     }
 });
 

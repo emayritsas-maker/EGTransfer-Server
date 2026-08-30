@@ -1,9 +1,17 @@
 const express = require("express");
 const app = express();
 const path = require("path");
+const cors = require("cors");
 
 // Load DB
 require("./database/db");
+
+// CORS (πρέπει να μπει ΠΡΙΝ από τα routes)
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "HEAD"],
+  allowedHeaders: ["Content-Type"]
+}));
 
 app.use(express.json());
 
@@ -35,6 +43,7 @@ const signalRoute = safeRequire("./routes/signal");
 
 /* ΤΩΡΑ βάζεις τα app.use με τις μεταβλητές */
 app.use("/register", registerRoute);
+app.use("/verifyEmail", require("./routes/verifyEmail"));
 app.use("/login", loginRoute);
 app.use("/getMetadata", getMetadataRoute);
 app.use("/updateMetadata", updateMetadataRoute);
@@ -55,6 +64,8 @@ app.head("/health", (req, res) => {
   res.status(200).end();
 });
 
-app.listen(3000, () => {
-    console.log("EGTransfer Server running on port 3000");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log("EGTransfer Server running on port " + PORT);
 });
