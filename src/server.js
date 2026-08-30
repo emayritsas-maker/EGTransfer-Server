@@ -51,6 +51,23 @@ app.get("/admin/db/users", (req, res) => {
   });
 });
 /* ----------------------------------------------------------- */
+/* -------------------- VERIFY FROM EXE -------------------- */
+app.post("/verifyEmailFromExe", (req, res) => {
+  const { code } = req.body;
+
+  const sqlite3 = require("sqlite3").verbose();
+  const db = new sqlite3.Database(path.join(__dirname, "database", "egtransfer.db"));
+
+  db.run(
+    "UPDATE users SET isVerified = 1 WHERE verificationCode = ?",
+    [code],
+    function(err) {
+      if (err) return res.json({ error: err.message });
+      res.json({ status: "ok", updated: this.changes });
+    }
+  );
+});
+/* ----------------------------------------------------------- */
 
 /* ΤΩΡΑ βάζεις τα app.use με τις μεταβλητές */
 app.use("/register", registerRoute);
