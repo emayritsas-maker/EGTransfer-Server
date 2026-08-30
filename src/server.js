@@ -42,8 +42,7 @@ const signalRoute = safeRequire("./routes/signal");
 /* --------------------------------------------------------------- */
 /* -------------------- PRIVATE DB VIEWER -------------------- */
 app.get("/admin/db/users", (req, res) => {
-  const sqlite3 = require("sqlite3").verbose();
-  const db = new sqlite3.Database(path.join(__dirname, "database", "egtransfer.db"));
+  const db = require("./database/db");
 
   db.all("SELECT * FROM users", (err, rows) => {
     if (err) return res.json({ error: err.message });
