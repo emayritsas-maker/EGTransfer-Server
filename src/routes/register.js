@@ -4,9 +4,37 @@ const db = require("../database/db");
 const bcrypt = require("bcrypt");
 const sendVerificationEmail = require("../email/emailVerify");
 
+// Generate TM friendcode
+function generateFriendcodeTM() {
+  const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lower = "abcdefghijklmnopqrstuvwxyz";
+  const symbols = "!@#$%^&*()-_=+[]{}<>?";
+  const digits = "0123456789";
+
+  function pick(str) {
+    return str[Math.floor(Math.random() * str.length)];
+  }
+
+  let code = "TM";
+
+  code += pick(upper);
+  code += pick(upper);
+
+  code += pick(lower);
+  code += pick(lower);
+
+  code += pick(symbols);
+  code += pick(symbols);
+
+  code += pick(digits);
+  code += pick(digits);
+
+  return code; // 10 chars total
+}
+
 // Generate random verification code
 function generateVerificationCode() {
-    return Math.random().toString(36).substring(2, 10);
+  return Math.random().toString(36).substring(2, 10);
 }
 
 router.post("/", async (req, res) => {
@@ -18,7 +46,10 @@ router.post("/", async (req, res) => {
 
     try {
         const passwordHash = await bcrypt.hash(password, 10);
-        const friendcode = "FRIEND_" + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+        // USE TM FRIENDCODE HERE
+        const friendcode = generateFriendcodeTM();
+
         const verificationCode = generateVerificationCode();
         const now = new Date().toISOString();
 
