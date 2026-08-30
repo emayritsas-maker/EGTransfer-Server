@@ -1,9 +1,17 @@
 const express = require("express");
 const app = express();
 const path = require("path");
+const cors = require("cors");
 
 // Load DB
 require("./database/db");
+
+// CORS (πρέπει να μπει ΠΡΙΝ από τα routes)
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "HEAD"],
+  allowedHeaders: ["Content-Type"]
+}));
 
 app.use(express.json());
 
