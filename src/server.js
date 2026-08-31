@@ -81,6 +81,11 @@ app.use("/acceptFriendRequest", acceptFriendRequestRoute);
 app.use("/getFriends", getFriendsRoute);
 app.use("/emailVerifyIP", require("./email/emailVerifyIP"));
 app.use("/signal", signalRoute);
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.set("trust proxy", true); // σημαντικό αν είσαι πίσω από Render / proxy
+app.use("/test", require("./routes/test"));
+
 // Health check endpoint
 app.get("/health", (req, res) => {
   res.json({ status: "ok" });
