@@ -53,9 +53,7 @@ app.get("/admin/db/users", (req, res) => {
 /* -------------------- VERIFY FROM EXE -------------------- */
 app.post("/verifyEmailFromExe", (req, res) => {
   const { code } = req.body;
-
-  const sqlite3 = require("sqlite3").verbose();
-  const db = new sqlite3.Database(path.join(__dirname, "database", "egtransfer.db"));
+  const db = require("./database/db");
 
   db.run(
     "UPDATE users SET isVerified = 1 WHERE verificationCode = ?",
