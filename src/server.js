@@ -70,6 +70,7 @@ app.post("/verifyEmailFromExe", (req, res) => {
 app.use("/register", registerRoute);
 app.use("/verifyEmail", require("./routes/verifyEmail"));
 app.use("/login", loginRoute);
+app.use("/adminUsers", require("./routes/adminUsers"));
 app.use("/getMetadata", getMetadataRoute);
 app.use("/updateMetadata", updateMetadataRoute);
 app.use("/getFriendcode", getFriendcodeRoute);
