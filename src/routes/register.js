@@ -51,7 +51,8 @@ router.post("/", async (req, res) => {
         const friendcode = generateFriendcodeTM();
 
         const verificationCode = generateVerificationCode();
-        const now = new Date().toISOString();
+const expire = new Date(Date.now() + 24*60*60*1000).toISOString();
+// INSERT ... verificationCode, verificationExpire
 
         db.run(
             `INSERT INTO users 
