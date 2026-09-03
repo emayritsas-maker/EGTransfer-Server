@@ -8,7 +8,7 @@ const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
 // Load DB
-require("./database/db");
+require("../database/db");
 
 /* -------------------- GLOBAL MIDDLEWARE (ΠΡΩΤΑ) -------------------- */
 // Trust proxy so that req.headers['x-forwarded-for'] δουλεύει σωστά πίσω από Cloudflare/Render
