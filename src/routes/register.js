@@ -13,7 +13,6 @@ let sendVerificationEmail = null;
 try {
   sendVerificationEmail = require(path.join(__dirname, "..", "email", "sendEmail"));
 } catch (e) {
-  // δεν υπάρχει module αποστολής email — απλώς θα logάρουμε τον κωδικό
   console.warn("sendEmail module not found; verification emails will be logged instead.");
 }
 
@@ -30,7 +29,7 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Missing email or password" });
     }
 
-    // Απλός validation email (μπορείς να το επεκτείνεις)
+    // Απλός validation email
     const emailNormalized = String(email).trim().toLowerCase();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNormalized)) {
       return res.status(400).json({ error: "Invalid email" });
@@ -74,7 +73,6 @@ router.post("/", async (req, res) => {
         };
 
         if (typeof sendVerificationEmail === "function") {
-          // Το sendVerificationEmail πρέπει να χειρίζεται errors εσωτερικά ή να επιστρέφει Promise
           try {
             const maybePromise = sendVerificationEmail(verificationPayload);
             if (maybePromise && typeof maybePromise.then === "function") {
@@ -84,7 +82,6 @@ router.post("/", async (req, res) => {
             console.error("sendVerificationEmail threw:", e);
           }
         } else {
-          // Αν δεν υπάρχει mailer, logάρουμε τον κωδικό για manual testing
           console.log("VERIFICATION CODE (no mailer):", verificationPayload);
         }
 
