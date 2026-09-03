@@ -92,7 +92,8 @@ app.get("/admin/db/users", (req, res) => {
     return res.status(403).json({ error: "Forbidden" });
   }
 
-  const db = require("./database/db");
+  // register.js (top)
+const db = require("../database/db");
   db.all("SELECT * FROM users", (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
@@ -116,7 +117,8 @@ app.post("/verifyEmailFromExe", sensitiveLimiter, (req, res) => {
   const { code } = req.body;
   if (!code) return res.status(400).json({ error: "Missing code" });
 
-  const db = require("./database/db");
+  // register.js (top)
+const db = require("../database/db");
 
   // Πάρε client IP προτιμώντας x-forwarded-for / cf-connecting-ip / true-client-ip
   const xf = req.headers['x-forwarded-for'] || req.headers['cf-connecting-ip'] || req.headers['true-client-ip'] || req.socket.remoteAddress || '';
