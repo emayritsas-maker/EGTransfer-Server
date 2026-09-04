@@ -36,6 +36,7 @@ function safeRequire(p) {
 
 /* Φόρτωσε routes με safeRequire ώστε να βλέπεις άμεσα σφάλματα require */
 const registerRoute = safeRequire("./routes/register");
+const verifyEmailFromExe = require("./routes/verifyEmailFromExe");
 const loginRoute = safeRequire("./routes/login");
 const getMetadataRoute = safeRequire("./routes/getMetadata");
 const updateMetadataRoute = safeRequire("./routes/updateMetadata");
@@ -98,6 +99,7 @@ app.post("/verifyEmailFromExe", (req, res) => {
 
 /* -------------------- REGISTER ROUTES (ΜΕΤΑ ΤΑ MIDDLEWARES) -------------------- */
 app.use("/register", registerRoute);
+app.use("/verifyEmailFromExe", verifyEmailFromExe);
 app.use("/verifyEmail", safeRequire("./routes/verifyEmail"));
 app.use("/login", loginRoute);
 app.use("/adminUsers", safeRequire("./routes/adminUsers"));
