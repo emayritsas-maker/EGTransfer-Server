@@ -72,8 +72,11 @@ router.post("/", async (req, res) => {
           console.log("VERIFICATION CODE (no mailer):", payload);
         }
 
-        return res.json({ status: "ok", id: userId });
-      });
+        return res.json({
+    status: "waiting_verification",
+    message: "Check your email to verify your account."
+});
+
 
       stmt.finalize();
     });
