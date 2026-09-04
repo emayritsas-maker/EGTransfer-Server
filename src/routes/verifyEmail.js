@@ -19,7 +19,7 @@ router.post("/", (req, res) => {
 
     // Find user by code and check expiry / isVerified
     db.get(
-        "SELECT id, isVerified, verificationCode, verificationExpire FROM users WHERE verificationCode = ?",
+        "SELECT id, isVerified, verificationCode FROM users WHERE verificationCode = ?",
         [code],
         (err, row) => {
             if (err) {
