@@ -60,7 +60,31 @@ router.post("/", async (req, res) => {
 
         if (typeof sendVerificationEmail === "function") {
           try {
-            const maybePromise = sendVerificationEmail(payload);
+            const maybePromise = sendVerificationEmail(
+  emailNormalized,
+  "Verify your EGTransfer account",
+  `
+    <h2>Verify your EGTransfer account</h2>
+    <p>Click the button below to verify your account:</p>
+
+    <a href="https://egtransfer-web.netlify.app/verify/?code=${verificationCode}"
+       style="
+         display:inline-block;
+         padding:12px 20px;
+         background:#4CAF50;
+         color:white;
+         text-decoration:none;
+         border-radius:6px;
+         font-size:16px;
+         font-weight:bold;
+       ">
+       Verify Account
+    </a>
+
+    <p>If you did not create an account, ignore this email.</p>
+  `
+);
+
             if (maybePromise && typeof maybePromise.then === "function") {
               maybePromise.catch(e => console.error("sendVerificationEmail failed:", e));
             }
