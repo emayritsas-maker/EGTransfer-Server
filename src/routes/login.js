@@ -17,6 +17,12 @@ router.post("/", async (req, res) => {
             if (err || !user) {
                 return res.json({ status: "error", error: "User not found" });
             }
+if (user.isVerified !== 1) {
+    return res.json({
+        status: "not_verified",
+        error: "Please verify your email before logging in."
+    });
+}
 
             const passwordMatch = await comparePassword(password, user.passwordHash);
             if (!passwordMatch) {
