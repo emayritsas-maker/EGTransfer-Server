@@ -42,7 +42,7 @@ router.post("/", async (req, res) => {
       const verificationCode = crypto.randomBytes(16).toString("hex");
 
       const stmt = db.prepare(
-        "INSERT INTO users (email, passwordHash, verificationCode, isVerified, lastLogin, ip) VALUES (?, ?, ?, 0, '', '')"
+        "INSERT INTO users (username, email, passwordHash, verificationCode, isVerified, lastLogin, ip) VALUES (?, ?, ?, ?, 0, '', '')"
       );
 
       stmt.run([emailNormalized, passwordHash, verificationCode], function (insertErr) {
