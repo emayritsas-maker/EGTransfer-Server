@@ -4,10 +4,8 @@ const path = require("path");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 
-// Σταθερό require προς τη βάση
 const db = require(path.join(__dirname, "..", "database", "db"));
 
-// Προαιρετικό mailer
 let sendVerificationEmail = null;
 try {
   sendVerificationEmail = require(path.join(__dirname, "..", "email", "sendEmail"));
@@ -17,13 +15,15 @@ try {
 
 router.post("/", async (req, res) => {
   try {
-    const { email, password } = req.body || {};
+    const { username, email, password } = req.body || {};
 
-    if (!email || !password) {
-      return res.json({ status: "error", error: "Missing email or password" });
+    if (!username || !email || !password) {
+      return res.json({ status: "error", error: "Missing username, email or password" });
     }
 
     const emailNormalized = String(email).trim().toLowerCase();
+    const usernameNormalized = String(username).trim();
+
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNormalized)) {
       return res.json({ status: "error", error: "Invalid email" });
     }
@@ -37,15 +37,14 @@ router.post("/", async (req, res) => {
         return res.json({ status: "error", error: "User already exists" });
       }
 
-      const saltRounds = 10;
-      const passwordHash = await bcrypt.hash(password, saltRounds);
+      const passwordHash = await bcrypt.hash(password, 10);
       const verificationCode = crypto.randomBytes(16).toString("hex");
 
       const stmt = db.prepare(
         "INSERT INTO users (username, email, passwordHash, verificationCode, isVerified, lastLogin, ip) VALUES (?, ?, ?, ?, 0, '', '')"
       );
 
-      stmt.run([emailNormalized, passwordHash, verificationCode], function (insertErr) {
+      stmt.run([usernameNormalized, emailNormalized, passwordHash, verificationCode], function (insertErr) {
         if (insertErr) {
           console.error("DB INSERT ERROR (register):", insertErr);
           return res.json({ status: "error", error: "Database error" });
@@ -73,10 +72,10 @@ router.post("/", async (req, res) => {
         }
 
         return res.json({
-    status: "waiting_verification",
-    message: "Check your email to verify your account."
-});
-
+          status: "waiting_verification",
+          message: "Check your email to verify your account."
+        });
+      });
 
       stmt.finalize();
     });
