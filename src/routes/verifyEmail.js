@@ -38,22 +38,13 @@ router.post("/", (req, res) => {
             }
 
             // If verificationExpire exists, check it
-            if (row.verificationExpire) {
-                try {
-                    const expireTs = new Date(row.verificationExpire).getTime();
-                    if (Date.now() > expireTs) {
-                        return res.status(410).json({ status: "error", error: "Verification code expired" });
-                    }
-                } catch (e) {
-                    // ignore parse errors and proceed
-                }
-            }
+            
 
             const now = new Date().toISOString();
 
             // Update user: set verified, clear code and expire, update lastLogin and ip
             db.run(
-                "UPDATE users SET isVerified = 1, verificationCode = '', verificationExpire = NULL, lastLogin = ?, ip = ? WHERE id = ?",
+                "UPDATE users SET isVerified = 1, verificationCode = '', lastLogin = ?, ip = ? WHERE id = ?",
                 [now, clientIp, row.id],
                 function (err2) {
                     if (err2) {
