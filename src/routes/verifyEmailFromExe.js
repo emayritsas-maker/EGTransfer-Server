@@ -29,8 +29,12 @@ router.post("/", (req, res) => {
         }
 
         db.run(
-            "UPDATE users SET isVerified = 1, verificationCode = '' WHERE id = ?",
-            [user.id],
+            "UPDATE users SET isVerified = 1, verificationCode = '', lastLogin = ?, ip = ? WHERE id = ?",
+            [
+                new Date().toISOString(),
+                req.headers['x-forwarded-for'] || req.socket.remoteAddress || "",
+                user.id
+            ],
             updateErr => {
                 if (updateErr) {
                     console.error("DB UPDATE ERROR:", updateErr);
