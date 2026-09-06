@@ -2,8 +2,9 @@ const express = require("express");
 const router = express.Router();
 const db = require("../database/db");
 
-router.post("/", (req, res) => {
-    const { username } = req.body;
+// 🔥 GET + POST SUPPORT
+router.all("/", (req, res) => {
+    const username = req.body.username || req.query.username;
 
     if (!username) {
         return res.json({ status: "error", error: "Missing username" });
@@ -19,13 +20,11 @@ router.post("/", (req, res) => {
 
             return res.json({
                 status: "ok",
-
-                // 🔥 EXACT KEYS THAT ENGINEER.CS EXPECTS
-                Username: user.username,
-                Email: user.email,
-                FriendCode: user.friendcode,
-                LastLogin: user.lastLogin,
-                LastIP: user.ip
+                username: user.username,
+                email: user.email,
+                friendcode: user.friendcode,
+                lastLogin: user.lastLogin,
+                ip: user.ip
             });
         }
     );
