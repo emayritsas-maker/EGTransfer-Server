@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 // Safe persistent path for Render FREE
-const dbPath = path.join(process.cwd(), "egtransfer.db");
+const dbPath = "/var/data/egtransfer.db";
 const schemaPath = path.join(__dirname, "schema.sql");
 
 console.log("DB PATH:", dbPath);
