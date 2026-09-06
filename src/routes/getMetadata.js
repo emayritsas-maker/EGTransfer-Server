@@ -18,15 +18,15 @@ router.post("/", (req, res) => {
             }
 
             return res.json({
-                status: "ok",
-                id: user.id,
-                username: user.username,
-                email: user.email,
-                friendcode: user.friendcode,
-                lastLogin: user.lastLogin,
-                ip: user.ip,
-                isVerified: user.isVerified
-            });
+    status: "ok",
+    Username: user.username,
+    Email: user.email,
+    FriendCode: user.friendcode,
+    LastLogin: user.lastLogin,
+    LastIP: user.ip
+});
+
+           
         }
     );
 });
