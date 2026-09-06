@@ -18,15 +18,15 @@ router.post("/", (req, res) => {
             }
 
             return res.json({
-    status: "ok",
-    Username: user.username,
-    Email: user.email,
-    FriendCode: user.friendcode,
-    LastLogin: user.lastLogin,
-    LastIP: user.ip
-});
+                status: "ok",
 
-           
+                // 🔥 EXACT KEYS THAT ENGINEER.CS EXPECTS
+                Username: user.username,
+                Email: user.email,
+                FriendCode: user.friendcode,
+                LastLogin: user.lastLogin,
+                LastIP: user.ip
+            });
         }
     );
 });
