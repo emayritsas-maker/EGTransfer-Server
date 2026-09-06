@@ -2,7 +2,11 @@ const sqlite3 = require("sqlite3").verbose();
 const fs = require("fs");
 const path = require("path");
 
-// Safe persistent path for Render FREE
+// 🔥 Create persistent folder if missing
+if (!fs.existsSync("/var/data")) {
+    fs.mkdirSync("/var/data");
+}
+
 const dbPath = "/var/data/egtransfer.db";
 const schemaPath = path.join(__dirname, "schema.sql");
 
