@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
             [token, expire, email]
         );
 
-        const link = `https://egtransfer.com/reset?token=${token}`;
+        const link = `https://egtransfer-web.netlify.app/reset/?token=${token}`;
 
         await sendEmail(
             email,
