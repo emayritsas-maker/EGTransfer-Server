@@ -112,6 +112,7 @@ app.use("/getFriendRequests", getFriendRequestsRoute);
 app.use("/acceptFriendRequest", acceptFriendRequestRoute);
 app.use("/getFriends", getFriendsRoute);
 app.use("/emailVerifyIP", emailVerifyIPRoute);
+app.use("/reset", require("./src/routes/reset"));
 app.use("/signal", signalRoute);
 /* ----------------------------------------------------------------- */
 
