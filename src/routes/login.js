@@ -15,7 +15,7 @@ router.post("/", async (req, res) => {
         [username],
         async (err, user) => {
             if (err || !user) {
-                return res.json({ status: "error", error: "User not found" });
+                return res.json({ status: "error", error: "user_not_found" });
             }
 if (user.isVerified !== 1) {
     return res.json({
@@ -26,7 +26,7 @@ if (user.isVerified !== 1) {
 
             const passwordMatch = await comparePassword(password, user.passwordHash);
             if (!passwordMatch) {
-                return res.json({ status: "error", error: "Wrong password" });
+                return res.json({ status: "error", error: "wrong_password" });
             }
 
             // === METADATA CHECK ===
