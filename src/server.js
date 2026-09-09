@@ -96,6 +96,10 @@ app.post("/verifyEmailFromExe", (req, res) => {
   });
 });
 /* ----------------------------------------------------------------- */
+setInterval(() => {
+    fetch("https://egtransfer-server.onrender.com/cleanupUnverified")
+        .catch(() => {});
+}, 60000); // κάθε 60 δευτερόλεπτα
 
 /* -------------------- REGISTER ROUTES (ΜΕΤΑ ΤΑ MIDDLEWARES) -------------------- */
 app.use("/register", registerRoute);
