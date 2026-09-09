@@ -28,6 +28,27 @@ if (user.isVerified !== 1) {
             if (!passwordMatch) {
                 return res.json({ status: "error", error: "wrong_password" });
             }
+           
+            // === FIRST LOGIN BYPASS ===
+if (localLastLogin === "FIRST_LOGIN" && localIP === "FIRST_LOGIN") {
+    const newLogin = new Date().toISOString();
+
+    db.run(
+        "UPDATE users SET lastLogin = ?, ip = ? WHERE id = ?",
+        [newLogin, localIP, user.id]
+    );
+
+    return res.json({
+        status: "ok",
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        friendcode: user.friendcode,
+        lastLogin: newLogin,
+        ip: localIP
+    });
+}
+
 
             // === METADATA CHECK ===
 
