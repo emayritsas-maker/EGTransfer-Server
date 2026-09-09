@@ -110,6 +110,7 @@ app.use("/searchFriend", searchFriendRoute);
 app.use("/sendFriendRequest", sendFriendRequestRoute);
 app.use("/getFriendRequests", getFriendRequestsRoute);
 app.use("/acceptFriendRequest", acceptFriendRequestRoute);
+app.use("/cleanupUnverified", require("./routes/cleanupUnverified"));
 app.use("/getFriends", getFriendsRoute);
 app.use("/emailVerifyIP", emailVerifyIPRoute);
 app.use("/signal", signalRoute);
