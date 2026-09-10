@@ -7,7 +7,7 @@ const cors = require("cors");
 const db = require("./database/db");
 
 // AUTO-MIGRATION: Add createdAt column if missing
-db.get("PRAGMA table_info(users)", (err, rows) => {
+db.all("PRAGMA table_info(users)", (err, rows) => {
   if (err) {
     console.error("PRAGMA error:", err);
     return;
@@ -40,7 +40,6 @@ db.get("PRAGMA table_info(users)", (err, rows) => {
     console.log("createdAt column already exists.");
   }
 });
-
 
 /* -------------------- GLOBAL MIDDLEWARE (ΠΡΩΤΑ) -------------------- */
 // Trust proxy so that req.headers['x-forwarded-for'] δουλεύει σωστά πίσω από Cloudflare/Render
