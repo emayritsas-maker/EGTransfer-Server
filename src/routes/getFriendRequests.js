@@ -1,20 +1,25 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../database/db");
+const { getDatabase } = require("firebase-admin/database");
 
-router.post("/", (req, res) => {
-  const { userId } = req.body;
+router.post("/", async (req, res) => {
+    const { username } = req.body;
 
-  if (!userId) return res.json({ status: "error", error: "Missing userId" });
-
-  db.all(
-    "SELECT id, fromUserId, toUserId, status, createdAt FROM friend_requests WHERE toUserId = ? AND status = 'pending'",
-    [userId],
-    (err, rows) => {
-      if (err) return res.json({ status: "error", error: err.message || err });
-      res.json({ status: "ok", requests: rows || [] });
+    if (!username) {
+        return res.json({ status: "error", error: "Missing username" });
     }
-  );
+
+    const db = getDatabase();
+
+    try {
+        const snapshot = await db.ref(`users/${username}/pending`).get();
+        const pending = snapshot.val() || [];
+
+        return res.json({ status: "ok", requests: pending });
+
+    } catch (err) {
+        return res.json({ status: "error", error: err.message });
+    }
 });
 
 module.exports = router;
