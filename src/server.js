@@ -3,8 +3,43 @@ const app = express();
 const path = require("path");
 const cors = require("cors");
 
-// Load DB
-require("./database/db");
+
+
+// AUTO-MIGRATION: Add createdAt column if missing
+db.get("PRAGMA table_info(users)", (err, rows) => {
+  if (err) {
+    console.error("PRAGMA error:", err);
+    return;
+  }
+
+  const hasCreatedAt = rows.some(col => col.name === "createdAt");
+
+  if (!hasCreatedAt) {
+    console.log("Adding createdAt column to users table...");
+
+    db.run("ALTER TABLE users ADD COLUMN createdAt TEXT", (alterErr) => {
+      if (alterErr) {
+        console.error("Failed to add createdAt:", alterErr);
+      } else {
+        console.log("createdAt column added successfully.");
+
+        db.run(
+          "UPDATE users SET createdAt = datetime('now') WHERE createdAt IS NULL",
+          (updateErr) => {
+            if (updateErr) {
+              console.error("Failed to set default createdAt:", updateErr);
+            } else {
+              console.log("createdAt default values set.");
+            }
+          }
+        );
+      }
+    });
+  } else {
+    console.log("createdAt column already exists.");
+  }
+});
+
 
 /* -------------------- GLOBAL MIDDLEWARE (ΠΡΩΤΑ) -------------------- */
 // Trust proxy so that req.headers['x-forwarded-for'] δουλεύει σωστά πίσω από Cloudflare/Render
