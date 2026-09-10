@@ -151,6 +151,7 @@ app.use("/acceptFriendRequest", acceptFriendRequestRoute);
 app.use("/cleanupUnverified", require("./routes/cleanupUnverified"));
 app.use("/getFriends", getFriendsRoute);
 app.use("/emailVerifyIP", emailVerifyIPRoute);
+app.use("/isVerified", require("./routes/isVerified"));
 app.use("/signal", signalRoute);
 /* ----------------------------------------------------------------- */
 
