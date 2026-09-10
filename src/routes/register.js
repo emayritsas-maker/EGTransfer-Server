@@ -41,65 +41,68 @@ router.post("/", async (req, res) => {
       const verificationCode = crypto.randomBytes(16).toString("hex");
 
       const stmt = db.prepare(
-        "INSERT INTO users (username, email, passwordHash, verificationCode, isVerified, lastLogin, ip) VALUES (?, ?, ?, ?, 0, '', '', datetime('now'))"
+        "INSERT INTO users (username, email, passwordHash, verificationCode, isVerified, lastLogin, ip, createdAt) VALUES (?, ?, ?, ?, 0, '', '', datetime('now'))"
       );
 
-      stmt.run([usernameNormalized, emailNormalized, passwordHash, verificationCode], function (insertErr) {
-        if (insertErr) {
-          console.error("DB INSERT ERROR (register):", insertErr);
-          return res.json({ status: "error", error: "Database error" });
-        }
-
-        const userId = this.lastID;
-
-        const payload = {
-          to: emailNormalized,
-          code: verificationCode,
-          userId
-        };
-
-        if (typeof sendVerificationEmail === "function") {
-          try {
-            const maybePromise = sendVerificationEmail(
-  emailNormalized,
-  "Verify your EGTransfer account",
-  `
-    <h2>Verify your EGTransfer account</h2>
-    <p>Click the button below to verify your account:</p>
-
-    <a href="https://egtransfer-web.netlify.app/verify/?code=${verificationCode}"
-       style="
-         display:inline-block;
-         padding:12px 20px;
-         background:#4CAF50;
-         color:white;
-         text-decoration:none;
-         border-radius:6px;
-         font-size:16px;
-         font-weight:bold;
-       ">
-       Verify Account
-    </a>
-
-    <p>If you did not create an account, ignore this email.</p>
-  `
-);
-
-            if (maybePromise && typeof maybePromise.then === "function") {
-              maybePromise.catch(e => console.error("sendVerificationEmail failed:", e));
-            }
-          } catch (e) {
-            console.error("sendVerificationEmail threw:", e);
+      stmt.run(
+        [usernameNormalized, emailNormalized, passwordHash, verificationCode],
+        function (insertErr) {
+          if (insertErr) {
+            console.error("DB INSERT ERROR (register):", insertErr);
+            return res.json({ status: "error", error: "Database error" });
           }
-        } else {
-          console.log("VERIFICATION CODE (no mailer):", payload);
-        }
 
-        return res.json({
-          status: "waiting_verification",
-          message: "Check your email to verify your account."
-        });
-      });
+          const userId = this.lastID;
+
+          const payload = {
+            to: emailNormalized,
+            code: verificationCode,
+            userId
+          };
+
+          if (typeof sendVerificationEmail === "function") {
+            try {
+              const maybePromise = sendVerificationEmail(
+                emailNormalized,
+                "Verify your EGTransfer account",
+                `
+                  <h2>Verify your EGTransfer account</h2>
+                  <p>Click the button below to verify your account:</p>
+
+                  <a href="https://egtransfer-web.netlify.app/verify/?code=${verificationCode}"
+                     style="
+                       display:inline-block;
+                       padding:12px 20px;
+                       background:#4CAF50;
+                       color:white;
+                       text-decoration:none;
+                       border-radius:6px;
+                       font-size:16px;
+                       font-weight:bold;
+                     ">
+                     Verify Account
+                  </a>
+
+                  <p>If you did not create an account, ignore this email.</p>
+                `
+              );
+
+              if (maybePromise && typeof maybePromise.then === "function") {
+                maybePromise.catch(e => console.error("sendVerificationEmail failed:", e));
+              }
+            } catch (e) {
+              console.error("sendVerificationEmail threw:", e);
+            }
+          } else {
+            console.log("VERIFICATION CODE (no mailer):", payload);
+          }
+
+          return res.json({
+            status: "waiting_verification",
+            message: "Check your email to verify your account."
+          });
+        }
+      );
 
       stmt.finalize();
     });
