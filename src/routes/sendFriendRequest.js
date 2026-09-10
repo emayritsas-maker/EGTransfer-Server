@@ -1,30 +1,29 @@
 const express = require("express");
 const router = express.Router();
-const db = require('../database/db');
-const sendEmail = require("../email/sendEmail");
+const { getDatabase } = require("firebase-admin/database");
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
     const { from, to } = req.body;
 
-    db.run(
-        "INSERT INTO friend_requests (fromUserId, toUserId, status) VALUES (?, ?, 'pending')",
-        [from, to],
-        async function (err) {
-            if (err) return res.json({ status: "error", error: err });
+    if (!from || !to) {
+        return res.json({ status: "error", error: "Missing from or to" });
+    }
 
-            db.get("SELECT email FROM users WHERE id = ?", [to], async (err, user) => {
-                if (user) {
-                    await sendEmail(
-                        user.email,
-                        "EGTransfer Friend Request",
-                        "You have a new friend request!"
-                    );
-                }
-            });
+    const db = getDatabase();
 
-            res.json({ status: "ok" });
-        }
-    );
+    try {
+        // Βάλε το "from" στο pending του "to"
+        await db.ref(`users/${to}/pending`).transaction(list => {
+            if (!list) return [from];
+            if (!list.includes(from)) list.push(from);
+            return list;
+        });
+
+        return res.json({ status: "ok" });
+
+    } catch (err) {
+        return res.json({ status: "error", error: err.message });
+    }
 });
 
 module.exports = router;
