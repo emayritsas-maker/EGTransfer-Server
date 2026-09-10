@@ -1,31 +1,25 @@
 const express = require("express");
 const router = express.Router();
-const db = require("../database/db");
+const { getDatabase } = require("firebase-admin/database");
 
-router.post("/", (req, res) => {
+router.post("/", async (req, res) => {
     const { username } = req.body;
 
     if (!username) {
         return res.json({ status: "error", error: "Missing username" });
     }
 
-    const sql = `
-        SELECT u.id, u.username, u.email, u.friendcode
-        FROM friends f
-        JOIN users u ON u.username = f.friend
-        WHERE f.owner = ?
-    `;
+    const db = getDatabase();
 
-    db.all(sql, [username], (err, rows) => {
-        if (err) {
-            return res.json({ status: "error", error: err });
-        }
+    try {
+        const snapshot = await db.ref(`users/${username}/friends`).get();
+        const friends = snapshot.val() || [];
 
-        return res.json({
-            status: "ok",
-            friends: rows
-        });
-    });
+        return res.json({ status: "ok", friends });
+
+    } catch (err) {
+        return res.json({ status: "error", error: err.message });
+    }
 });
 
 module.exports = router;
