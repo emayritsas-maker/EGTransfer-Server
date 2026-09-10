@@ -3,7 +3,8 @@ const app = express();
 const path = require("path");
 const cors = require("cors");
 
-
+// Load DB once (ΠΡΕΠΕΙ να είναι εδώ)
+const db = require("./database/db");
 
 // AUTO-MIGRATION: Add createdAt column if missing
 db.get("PRAGMA table_info(users)", (err, rows) => {
@@ -91,7 +92,7 @@ app.use("/test", safeRequire("./routes/test"));
 
 /* -------------------- PRIVATE DB VIEWER -------------------- */
 app.get("/admin/db/users", (req, res) => {
-  const db = require("./database/db");
+  
   db.all("SELECT * FROM users", (err, rows) => {
     if (err) return res.json({ error: err.message });
     res.json(rows);
@@ -102,8 +103,7 @@ app.get("/admin/db/users", (req, res) => {
 /* -------------------- VERIFY FROM EXE (CAPTURE IP) -------------------- */
 app.post("/verifyEmailFromExe", (req, res) => {
   const { code } = req.body;
-  const db = require("./database/db");
-
+  
   // Πάρε client IP προτιμώντας x-forwarded-for / cf-connecting-ip / true-client-ip
   const xf = req.headers['x-forwarded-for'] || req.headers['cf-connecting-ip'] || req.headers['true-client-ip'] || req.socket.remoteAddress || '';
   const clientIp = String(xf).split(',')[0].trim();
