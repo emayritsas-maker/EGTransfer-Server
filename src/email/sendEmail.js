@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 async function sendEmail(to, subject, html) {
     try {
         const transporter = nodemailer.createTransport({
-            host: "://gmail.com",
+            host: "smtp.gmail.com",
             port: 587,
             secure: false, // false επειδή χρησιμοποιούμε τη θύρα 587
             auth: {
