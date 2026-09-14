@@ -15,10 +15,11 @@ async function sendEmail(to, subject, html) {
                     },
                     content: {
                         title: subject,
-                        body: html
+                        html: html // <-- Εδώ άλλαξε σε html για να διαβάζει τα links/κώδικες
                     },
-                    from: {
-                        email: process.env.COURIER_SENDER
+                    routing: {
+                        method: "single",
+                        channels: ["email"]
                     }
                 }
             })
