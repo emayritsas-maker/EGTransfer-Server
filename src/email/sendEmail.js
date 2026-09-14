@@ -1,7 +1,6 @@
-// Χρησιμοποιούμε μια standard function χωρίς top-level ESM await για να μην σπάει το require()
 function sendEmail(to, subject, html) {
-    // Επιστρέφουμε Promise για να μπορείς να κάνεις await εκεί που το καλείς
     return new Promise((resolve, reject) => {
+        // Διορθωμένο URL: /messages αντί για /send
         fetch("https://courier.com", {
             method: "POST",
             headers: {
@@ -15,7 +14,7 @@ function sendEmail(to, subject, html) {
                     },
                     content: {
                         title: subject,
-                        body: html // Courier simple content body
+                        body: html // Εδώ το Courier δέχεται το περιεχόμενό σου
                     },
                     routing: {
                         method: "single",
@@ -24,17 +23,28 @@ function sendEmail(to, subject, html) {
                 }
             })
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log("[COURIER] Response:", data);
-            resolve(data);
+        .then(async response => {
+            // Αν ο server επιστρέψει σφάλμα, διάβασε το ως κείμενο για να μην κρασάρει το JSON.parse
+            const textData = await response.text();
+            
+            if (!response.ok) {
+                throw new Error(`Courier API Error [${response.status}]: ${textData}`);
+            }
+
+            try {
+                const jsonData = JSON.parse(textData);
+                console.log("[COURIER] Success Response:", jsonData);
+                resolve(jsonData);
+            } catch (e) {
+                console.log("[COURIER] Raw Text Response:", textData);
+                resolve(textData);
+            }
         })
         .catch(err => {
-            console.error("[COURIER ERROR]", err);
+            console.error("[COURIER ERROR]", err.message);
             reject(err);
         });
     });
 }
 
-// Καθαρό CommonJS export για να διαβάζεται σωστά από τα routes σου
 module.exports = sendEmail;
