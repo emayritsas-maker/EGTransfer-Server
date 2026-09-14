@@ -1,7 +1,6 @@
-const fetch = require("node-fetch");
-
 async function sendEmail(to, subject, html) {
     try {
+        // Χρησιμοποιούμε απευθείας τη fetch του Node 24 (χωρίς require)
         const response = await fetch("https://api.courier.com/send", {
             method: "POST",
             headers: {
@@ -15,7 +14,7 @@ async function sendEmail(to, subject, html) {
                     },
                     content: {
                         title: subject,
-                        html: html // <-- Εδώ άλλαξε σε html για να διαβάζει τα links/κώδικες
+                        html: html // Χρησιμοποιούμε html αντί για body
                     },
                     routing: {
                         method: "single",
