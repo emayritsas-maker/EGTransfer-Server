@@ -1,31 +1,25 @@
-const fetch = require("node-fetch");
+const nodemailer = require("nodemailer");
 
 async function sendEmail(to, subject, html) {
     try {
-        const response = await fetch("https://api.mailersend.com/v1/email", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${process.env.MAILERSEND_API_KEY}`
-            },
-            body: JSON.stringify({
-                from: {
-                    email: process.env.MAILERSEND_FROM_EMAIL
-                },
-                to: [
-                    {
-                        email: to
-                    }
-                ],
-                subject: subject,
-                html: html
-            })
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS
+            }
         });
 
-        const data = await response.json();
-        console.log("[MAILERSEND] Response:", data);
+        await transporter.sendMail({
+            from: process.env.SMTP_USER,
+            to: to,
+            subject: subject,
+            html: html
+        });
+
+        console.log("[SMTP] Email sent to:", to);
     } catch (err) {
-        console.error("[MAILERSEND ERROR]", err);
+        console.error("[SMTP ERROR]", err);
     }
 }
 
