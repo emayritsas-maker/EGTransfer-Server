@@ -2,25 +2,32 @@ const fetch = require("node-fetch");
 
 async function sendEmail(to, subject, html) {
     try {
-        const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+        const response = await fetch("https://api.courier.com/send", {
             method: "POST",
             headers: {
-                "accept": "application/json",
-                "api-key": process.env.BREVO_API_KEY,
-                "content-type": "application/json"
+                "Authorization": `Bearer ${process.env.COURIER_AUTH_TOKEN}`,
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                sender: { email: process.env.BREVO_SENDER },
-                to: [{ email: to }],
-                subject: subject,
-                htmlContent: html
+                message: {
+                    to: {
+                        email: to
+                    },
+                    content: {
+                        title: subject,
+                        body: html
+                    },
+                    from: {
+                        email: process.env.COURIER_SENDER
+                    }
+                }
             })
         });
 
         const data = await response.json();
-        console.log("[BREVO] Response:", data);
+        console.log("[COURIER] Response:", data);
     } catch (err) {
-        console.error("[BREVO ERROR]", err);
+        console.error("[COURIER ERROR]", err);
     }
 }
 
