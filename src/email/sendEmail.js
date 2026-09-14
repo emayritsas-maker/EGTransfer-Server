@@ -3,10 +3,16 @@ const nodemailer = require("nodemailer");
 async function sendEmail(to, subject, html) {
     try {
         const transporter = nodemailer.createTransport({
-            service: "gmail",
+            host: "://gmail.com",
+            port: 587,
+            secure: false, // false επειδή χρησιμοποιούμε τη θύρα 587
             auth: {
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS
+            },
+            tls: {
+                // Επιτρέπει τη σύνδεση ακόμα κι αν το Render έχει αυστηρούς κανόνες για τα πιστοποιητικά
+                rejectUnauthorized: false
             }
         });
 
