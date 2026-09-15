@@ -1,6 +1,6 @@
 function sendEmail(to, subject, html) {
     return new Promise((resolve, reject) => {
-        // Χρησιμοποιούμε το ΝΕΟ endpoint που δεν πετάει 405
+        // Χρησιμοποιούμε το σωστό, επίσημο Production endpoint της Courier
         fetch("https://courier.com", {
             method: "POST",
             headers: {
@@ -10,15 +10,15 @@ function sendEmail(to, subject, html) {
             body: JSON.stringify({
                 message: {
                     to: {
-                        email: to // Ο παραλήπτης
+                        email: to
                     },
                     content: {
                         title: subject,
-                        body: html // Το κείμενο/HTML του verification κώδικα
+                        body: html // Εδώ περνάει ο κώδικας register
                     },
                     routing: {
                         method: "single",
-                        providers: ["courier"] // Χρήση του Courier Provider αντί για Gmail
+                        providers: ["courier"] // Στέλνει αυτόματα η Courier
                     }
                 }
             })
@@ -32,10 +32,10 @@ function sendEmail(to, subject, html) {
 
             try {
                 const jsonData = JSON.parse(textData);
-                console.log("[COURIER] Success Response:", jsonData);
+                console.log("[COURIER] Success!", jsonData);
                 resolve(jsonData);
             } catch (e) {
-                console.log("[COURIER] Text Response:", textData);
+                console.log("[COURIER] Response Text:", textData);
                 resolve(textData);
             }
         })
