@@ -1,7 +1,6 @@
 function sendEmail(to, subject, html) {
     return new Promise((resolve, reject) => {
-        // Το URL είναι σωστό, αλλά το API θέλει πολύ συγκεκριμένο JSON format
-        fetch("https://api.courier.com/send", {
+        fetch("https://courier.com", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${process.env.COURIER_AUTH_TOKEN}`,
@@ -14,29 +13,26 @@ function sendEmail(to, subject, html) {
                     },
                     content: {
                         title: subject,
-                        body: html // Εδώ περνάει το κείμενο/HTML του verification κώδικα
+                        body: html
                     },
                     routing: {
                         method: "single",
-                        channels: ["email"]
+                        // Λέμε στο Courier να χρησιμοποιήσει τον δικό του provider
+                        providers: ["courier"] 
                     }
                 }
             })
         })
         .then(async response => {
             const textData = await response.text();
-            
-            // Αν επιστρέψει σφάλμα (π.χ. 405 ή 400), το τυπώνουμε καθαρά
             if (!response.ok) {
                 throw new Error(`Courier API Error [${response.status}]: ${textData}`);
             }
-
             try {
                 const jsonData = JSON.parse(textData);
                 console.log("[COURIER] Success Response:", jsonData);
                 resolve(jsonData);
             } catch (e) {
-                console.log("[COURIER] Text Response:", textData);
                 resolve(textData);
             }
         })
