@@ -11,17 +11,17 @@ function sendEmail(to, subject, html) {
         });
 
         const options = {
-            hostname: '://brevo.com',
-            port: 443,
-            path: '/v3/smtp/email',
-            method: 'POST',
-            headers: {
-                'accept': 'application/json',
-                'api-key': process.env.BREVO_API_KEY,
-                'content-type': 'application/json',
-                'Content-Length': data.length
-            }
-        };
+    hostname: 'api.brevo.com', // <-- ΠΡΟΣΟΧΗ: Σκέτο api.brevo.com, ΟΧΙ ://brevo.com
+    port: 443,
+    path: '/v3/smtp/email',
+    method: 'POST',
+    headers: {
+        'accept': 'application/json',
+        'api-key': process.env.BREVO_API_KEY,
+        'content-type': 'application/json',
+        'Content-Length': data.length
+    }
+};
 
         const req = https.request(options, (res) => {
             let responseBody = '';
